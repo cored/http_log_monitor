@@ -13,7 +13,7 @@ module HttpLogMonitor
         date: DateTime.strptime(
           attrs["%t"].gsub(/\[|\]/, ""), format = '%e/%b/%Y:%H:%M:%S %z'
         ),
-        section: attrs["%r"].split(/\s/)[1],
+        section: attrs["%r"].split(/\s/)[1].split(/\//)[2],
         code: attrs["%>s"],
         bytes: attrs["%b"]
       )
