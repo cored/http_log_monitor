@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "http_log_monitor"
+require "optparse"
+
+args = {}
+OptionParser.new do |options|
+  options.banner = "Usages: bin/monitor ACCESS_LOG_PATH [options]"
+
+  options.separator ""
+  options.separator "Specific options:"
+
+  options.on_tail("-h", "--help", "Display help") { |_| puts options; exit }
+  options.on("-a", "--alert-hits <AMOUNT>", "Hit alert threshold") { |opt| args[:alert_threshold] = opt }
+  options.on("-t", "--threshold <SECONDS>", "Log retention threshold") { |opt| args[:threshold] = opt }
+
+end.parse!
+HttpLogMonitor.call(options: args)
