@@ -32,4 +32,18 @@ RSpec.describe HttpLogMonitor::LogQueue do
       end
     end
   end
+
+  describe "#average_bytes" do
+    context "when there are no logs in the queue" do
+      specify do
+        expect(log_queues.average_bytes).to eql 0
+      end
+    end
+
+    context "when there are logs in the queue" do
+      specify do
+        expect(log_queues.push(log).average_bytes).to eql 123
+      end
+    end
+  end
 end

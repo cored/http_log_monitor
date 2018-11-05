@@ -13,6 +13,11 @@ module HttpLogMonitor
       logs.map(&:bytes).reduce(0, :+)
     end
 
+    def average_bytes
+      return 0 if current_bytes.zero?
+      current_bytes / current_hits
+    end
+
     def push(log)
       new_logs = logs + [log]
       new_sections = sections.merge(
