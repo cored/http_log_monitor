@@ -35,7 +35,7 @@ module HttpLogMonitor
         logs: new_logs,
         alerts: alerts.with(
           section: log.section,
-          hits: sections[log.section],
+          hits: amount_of_hits_past_2_minutes_for(log.section),
           threshold: alerts_threshold
         )
       )
@@ -68,12 +68,29 @@ module HttpLogMonitor
 
     private
 
+    def amount_of_hits_past_2_minutes_for(section)
+      all_logs_for(section).select do |log|
+        time_diff = Time.at((current_time_in_seconds - log.date.to_time).to_i.abs).strftime("%M:%S")
+        time_diff.to_i == 2
+      end.count
+    end
+
     def valid_logs
       logs.select(&:valid?)
     end
 
     def invalid_logs
       logs.reject(&:valid?)
+    end
+
+    def all_logs_for(section)
+      valid_logs.select do |log|
+        log.section == section
+      end
+    end
+
+    def current_time_in_seconds
+      Time.now.to_time
     end
   end
 end
