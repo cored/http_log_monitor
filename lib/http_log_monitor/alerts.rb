@@ -11,7 +11,7 @@ module HttpLogMonitor
       if hits >= threshold
         new(alerts: alerts + [Alert.new(hits: hits, section: section)])
       else
-        new(alerts: recover_for(section))
+        new(alerts: [])
       end
     end
 

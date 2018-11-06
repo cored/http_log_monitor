@@ -7,13 +7,15 @@ module HttpLogMonitor
     def self.for(data)
       parser = ApacheLogRegex.new(ACCESS_LOG_PARSER_FORMAT)
       attrs = parser.parse!(data)
+      uri = attrs["%r"].scan(/\/[a-zA-Z]+/)
+      section = uri[1] || uri[0]
       new(
         host: attrs["%h"],
         user: attrs["%u"],
         date: DateTime.strptime(
           attrs["%t"].gsub(/\[|\]/, ""), format = '%e/%b/%Y:%H:%M:%S %z'
         ),
-        section: attrs["%r"].split(/\s/)[1].split(/\//)[2],
+        section: section,
         code: attrs["%>s"],
         bytes: attrs["%b"]
       )
