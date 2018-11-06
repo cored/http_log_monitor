@@ -25,6 +25,8 @@ module HttpLogMonitor
       report.render
       sleep(2)
     end
+  rescue Errno::ENOENT
+    puts "#{monitor.file_path} doesn't exist"
   rescue Interrupt
     report.to_s
   end
