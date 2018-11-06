@@ -6,13 +6,15 @@ RSpec.describe HttpLogMonitor::Alerts do
   describe "#with" do
     context "when the section hits is greater than the alert threshold" do
       specify do
-        expect(alerts.with(hits: 1, threshold: 1).count).to eql 1
+        expect(alerts.with(section: "user",
+                           hits: 1, threshold: 1).count).to eql 1
       end
     end
 
     context "when the section hits is less than the alert threshold" do
       specify do
-        expect(alerts.with(hits: 1, threshold: 5).count).to eql 0
+        expect(alerts.with(section: "",
+                           hits: 1, threshold: 5).count).to eql 0
       end
     end
   end

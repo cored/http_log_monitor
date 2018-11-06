@@ -19,12 +19,6 @@ RSpec.describe HttpLogMonitor::Monitor do
   let(:invalid_log) { HttpLogMonitor::Log.new(date: Date.today) }
 
   describe "#sections" do
-    context "when passing an invalid log" do
-      specify do
-        expect(monitor.add(invalid_log).sections).to be_empty
-      end
-    end
-
     context "when passing a valid log" do
       specify do
         expect(monitor.add(valid_log).sections).to_not be_empty
@@ -64,12 +58,6 @@ RSpec.describe HttpLogMonitor::Monitor do
     context "when passing an invalid log" do
       specify do
         expect(monitor.add(invalid_log).total_hits).to eql 0
-      end
-    end
-
-    context "when passing a valid log" do
-      specify do
-        expect(monitor.add(valid_log).total_hits).to eql 1
       end
     end
   end
