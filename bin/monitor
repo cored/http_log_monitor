@@ -12,8 +12,8 @@ OptionParser.new do |options|
   options.separator "Specific options:"
 
   options.on_tail("-h", "--help", "Display help") { |_| puts options; exit }
-  options.on("-a", "--alert-hits <AMOUNT>", "Hit alert threshold") { |opt| args[:alert_threshold] = opt }
+  options.on("-a", "--alerts-threshold <AMOUNT>", "Hit alert threshold") { |opt| args[:alerts_threshold] = opt }
   options.on("-t", "--threshold <SECONDS>", "Log retention threshold") { |opt| args[:threshold] = opt }
 
 end.parse!
-HttpLogMonitor.call(options: args)
+HttpLogMonitor.call(options: args.merge(file_path: ARGV[0]))

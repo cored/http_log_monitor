@@ -5,46 +5,60 @@ module HttpLogMonitor
       @refresh = refresh
     end
 
-    def display
-      Thread.new do
-        refresh_after(refresh) do
-          clear_screen
-          to_s
-        end
-      end
-    end
-
     def with(monitor)
-      self.class.new(monitor: monitor)
+      self.class.new(monitor: monitor, refresh: refresh)
     end
 
     def to_s
-      puts "Total hits: %d" % monitor.total_hits
-      puts "Hits - Threshold: %s Current: %d" % [monitor.threshold, monitor.total_hits]
-      puts "Bytes - Total: %s Avg: %d" % [monitor.total_bytes, monitor.average_bytes]
-      puts "Sections "
-      puts "=================================================================="
-      puts "Name - Total Hits: %s" % [monitor.sections.to_s]
-      puts "=================================================================="
-      puts "Alerts"
-      puts "High Traffic: %d" % [monitor.total_alerts]
+<<EOF
+Monitor Info
+--------------------------------------------
+Threshold: #{monitor.threshold}
+Alert Threshold: #{monitor.alert_threshold}
+--------------------------------------------
+Log Stats
+---------------------------------------------
+Filename: #{monitor.file_path}
+Total lines processed: #{monitor.queue_size}
+Total lines with errors: #{monitor.invalid_logs_count}
+---------------------------------------------
+Sections Stats
+---------------------------------------------
+Most hits: #{monitor.section_most_hits}
+Less hits: #{monitor.section_with_less_hits}
+---------------------------------------------
+HTTP Codes Stats
+---------------------------------------------
+#{monitor.http_code_stats.join(" - ")}
+---------------------------------------------
+Alerts
+---------------------------------------------
+Total: #{monitor.total_alerts}
+Section - Amount
+#{monitor.alerts_stats.join(" - ")}
+EOF
+    end
+
+    def render
+      clear_screen
+      puts to_s
     end
 
     private
 
     attr_reader :monitor, :refresh
 
-    def refresh_after(seconds)
+    def clear_screen
+      system("clear") or system("cls")
+    end
+
+    def refresh_after
       loop do
         before = Time.now
         yield
-        interval = seconds - (Time.now - before)
+        interval = refresh - (Time.now - before)
         sleep(interval) if interval > 0
       end
-    end
-
-    def clear_screen
-      system "clear" or system "cls"
     end
   end
 end

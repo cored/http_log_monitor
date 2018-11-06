@@ -1,5 +1,3 @@
-require "dry-struct"
-require "apachelogregex"
 require "http_log_monitor/version"
 
 require_relative "./http_log_monitor/types"
@@ -14,15 +12,19 @@ module HttpLogMonitor
     monitor = Monitor.for(options)
     report = Report.new(monitor: monitor)
 
-    report.display
+    f = File.open(monitor.file_path, "r")
 
-    ARGF.each_line do |line|
-      log = Log.for(line)
+    loop do
+      select([f])
+      line = f.gets
+
+      log = Log.for(line.to_s)
       monitor = monitor.add(log)
 
-      report = report.with(monitor)
+      report =  report.with(monitor)
+      report.render
+      sleep(2)
     end
-    report.to_s
   rescue Interrupt
     report.to_s
   end
