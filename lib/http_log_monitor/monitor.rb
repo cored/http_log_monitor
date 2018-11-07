@@ -1,5 +1,22 @@
 module HttpLogMonitor
   class Monitor < Dry::Struct
+    extend Forwardable
+
+    delegate [
+      :total_hits,
+      :total_bytes,
+      :total_alerts,
+      :threshold,
+      :sections,
+      :less_hit_section,
+      :most_hit_section,
+      :queue_size,
+      :invalid_logs_count,
+      :average_bytes,
+      :alerts_threshold,
+      :average_alerts,
+    ] => :log_queue
+
     def self.for(attributes)
       new(
         attributes.merge(
@@ -18,46 +35,6 @@ module HttpLogMonitor
       new(log_queue: log_queue.push(log))
     end
 
-    def threshold
-      log_queue.threshold
-    end
-
-    def total_alerts
-      log_queue.total_alerts
-    end
-
-    def sections
-      log_queue.sections
-    end
-
-    def total_hits
-      log_queue.current_hits
-    end
-
-    def total_bytes
-      log_queue.current_bytes
-    end
-
-    def average_bytes
-      log_queue.average_bytes
-    end
-
-    def queue_size
-      log_queue.size
-    end
-
-    def section_most_hits
-      log_queue.most_hit_section
-    end
-
-    def section_with_less_hits
-      log_queue.less_hit_section
-    end
-
-    def invalid_logs_count
-      log_queue.invalid_logs_count
-    end
-
     def alerts_stats
       log_queue.alerts.to_h.map do |section, alerts|
         [section, alerts.count]
@@ -72,18 +49,6 @@ module HttpLogMonitor
           stats.count,
         ]
       end
-    end
-
-    def average_alerts
-      log_queue.average_alerts
-    end
-
-    def threshold
-      log_queue.threshold
-    end
-
-    def alert_threshold
-      log_queue.alerts_threshold
     end
   end
 end

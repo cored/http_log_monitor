@@ -61,4 +61,44 @@ RSpec.describe HttpLogMonitor::Monitor do
       end
     end
   end
+
+  describe "#queue_size" do
+    context "when passing an invalid log" do
+      specify do
+        expect(monitor.add(invalid_log).queue_size).to eql 0
+      end
+    end
+
+    context "when passing a valid log" do
+      specify do
+        expect(monitor.add(valid_log).queue_size).to eql 1
+      end
+    end
+  end
+
+  describe "#invalid_logs_count" do
+    context "when passing an invalid log" do
+      specify do
+        expect(monitor.add(invalid_log).invalid_logs_count).to eql 1
+      end
+    end
+
+    context "when passing a valid log" do
+      specify do
+        expect(monitor.add(valid_log).invalid_logs_count).to eql 0
+      end
+    end
+  end
+
+  describe "#http_code_stats" do
+    context "when passing a valid log" do
+      specify do
+        expect(
+          monitor.add(valid_log).http_code_stats
+        ).to match_array([
+          ["200", ["index.php"], 1]
+        ])
+      end
+    end
+  end
 end

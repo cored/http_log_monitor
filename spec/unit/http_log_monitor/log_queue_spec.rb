@@ -17,6 +17,10 @@ RSpec.describe HttpLogMonitor::LogQueue do
     )
   end
 
+  let(:invalid_log) do
+    HttpLogMonitor::Log.new(date: DateTime.new(2018, 11, 06, 10, 00))
+  end
+
   describe "#push" do
     context "when passing a section with hits for the past 2 minutes" do
 
@@ -32,30 +36,36 @@ RSpec.describe HttpLogMonitor::LogQueue do
     end
   end
 
-  describe "#current_hits" do
+  describe "#total_hits" do
     context "when there are no logs in the queue" do
       specify do
-        expect(log_queue.current_hits).to eql 0
+        expect(log_queue.total_hits).to eql 0
       end
     end
 
     context "when there are logs in the queue" do
       specify do
-        expect(log_queue.push(log).current_hits).to eql 1
+        expect(
+          log_queue
+          .push(log)
+          .push(log)
+          .push(invalid_log)
+          .total_hits
+        ).to eql 2
       end
     end
   end
 
-  describe "#current_bytes" do
+  describe "#total_bytes" do
     context "when there are no logs in the queue" do
       specify do
-        expect(log_queue.current_bytes).to eql 0
+        expect(log_queue.total_bytes).to eql 0
       end
     end
 
     context "when there are logs in the queue" do
       specify do
-        expect(log_queue.push(log).current_bytes).to eql 123
+        expect(log_queue.push(log).total_bytes).to eql 123
       end
     end
   end

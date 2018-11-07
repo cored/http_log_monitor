@@ -1,11 +1,6 @@
 require "http_log_monitor/version"
 
 require_relative "./http_log_monitor/types"
-require_relative "./http_log_monitor/alerts"
-require_relative "./http_log_monitor/log"
-require_relative "./http_log_monitor/log_queue"
-require_relative "./http_log_monitor/monitor"
-require_relative "./http_log_monitor/report"
 
 module HttpLogMonitor
   def self.call(options:)

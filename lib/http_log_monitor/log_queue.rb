@@ -1,30 +1,36 @@
 module HttpLogMonitor
   class LogQueue < Dry::Struct
+    extend Forwardable
+    delegate [:size] => :logs
+
+    alias :total_hits :size
+    alias :queue_size :size
+
     attribute :logs, Types::Array.of(Log).default([])
+    attribute :invalid_logs, Types::Array.of(Log).default([])
     attribute :threshold, Types::Coercible::Integer.default(120)
     attribute :alerts_threshold, Types::Coercible::Integer.default(500)
     attribute :alerts, Alerts.default(Alerts.new)
     attribute :sections, Types::Hash.default(Hash.new(0))
 
-    def current_hits
-      valid_logs.size
-    end
-
-    def size
-      valid_logs.size
-    end
-
-    def current_bytes
-      valid_logs.map(&:bytes).reduce(0, :+)
+    def total_bytes
+      logs.map(&:bytes).reduce(:+)
     end
 
     def average_bytes
-      return 0 if current_bytes.zero?
-      current_bytes / current_hits
+      return 0 if total_bytes.zero?
+      total_bytes / total_hits
     end
 
     def push(log)
-      new_logs = logs + [log]
+      new_logs = logs
+      new_invalid_logs = invalid_logs
+
+      if log.valid?
+        new_logs += [log]
+      else
+        new_invalid_logs += [log]
+      end
 
       new_sections = sections.merge(
         log.section => sections[log.section] + 1
@@ -33,6 +39,7 @@ module HttpLogMonitor
       new(
         sections: new_sections,
         logs: new_logs,
+        invalid_logs: new_invalid_logs,
         alerts: alerts.with(
           section: log.section,
           hits: amount_of_hits_past_2_minutes_for(log.section),
@@ -63,7 +70,7 @@ module HttpLogMonitor
     end
 
     def most_processed_http_codes
-      valid_logs.group_by(&:code).sort
+      logs.group_by(&:code).sort
     end
 
     private
@@ -75,16 +82,8 @@ module HttpLogMonitor
       end.count
     end
 
-    def valid_logs
-      logs.select(&:valid?)
-    end
-
-    def invalid_logs
-      logs.reject(&:valid?)
-    end
-
     def all_logs_for(section)
-      valid_logs.select do |log|
+      logs.select do |log|
         log.section == section
       end
     end
