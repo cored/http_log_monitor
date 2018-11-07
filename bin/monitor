@@ -14,6 +14,7 @@ OptionParser.new do |options|
   options.on_tail("-h", "--help", "Display help") { |_| puts options; exit }
   options.on("-a", "--alerts-threshold <AMOUNT>", "Hit alert threshold") { |opt| args[:alerts_threshold] = opt }
   options.on("-t", "--threshold <SECONDS>", "Log retention threshold") { |opt| args[:threshold] = opt }
+  options.on("-r", "--refresh <SECONDS>", "Time to refresh the monitor") { |opt| args[:refresh] = opt }
 
 end.parse!
 HttpLogMonitor.call(options: args.merge(file_path: ARGV[0]))

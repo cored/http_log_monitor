@@ -21,6 +21,58 @@ Or install it yourself as:
 
 ## Usage
 
+```
+$ bin/monitor --help
+
+Usages: bin/monitor ACCESS_LOG_PATH [options]
+
+Specific options:
+		-a, --alerts-threshold <AMOUNT>  Hit alert threshold
+		-t, --threshold <SECONDS>        Log retention threshold
+		-h, --help                       Display help
+```
+
+## Report Stats
+
+```
+Monitor Info
+--------------------------------------------------
+Threshold: 1
+Alert Threshold: 5
+Refresh Time: 10
+--------------------------------------------------
+Log Stats
+--------------------------------------------------
+Filename: ./test_access.log
+Total lines processed: 9
+Total lines with errors: 0
+---------------------------------------------------
+Sections Stats
+---------------------------------------------------
+Most hits: ["/user", 6]
+Less hits: ["/report", 3]
+---------------------------------------------------
+HTTP Codes Stats
+----------------------------------------------------
+200 - /report - /user - 7 - 503 - /user - 2
+----------------------------------------------------
+Alerts
+-----------------------------------------------------
+Total: 0
+High Traffic Requests
+```
+
+## Configuration Settings
+
+```
+$ export MONITOR_REFRESH_TIME=10 # 10 by default
+$ export MONITOR_ALERTS_THRESHOLD=500 # 500 by default
+$ export MONITOR_THRESHOLD=120 # 120 by default
+```
+
+*Any of the environment variables will be overwritten by the options passed
+through the command line*
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

@@ -1,8 +1,10 @@
 require "http_log_monitor/version"
-
+require "dotenv"
 require_relative "./http_log_monitor/types"
 
 module HttpLogMonitor
+  Dotenv.load!
+
   def self.call(options:)
     monitor = Monitor.for(options)
     report = Report.new(monitor: monitor)
@@ -18,7 +20,7 @@ module HttpLogMonitor
 
       report =  report.with(monitor)
       report.render
-      sleep(2)
+      sleep(monitor.refresh)
     end
   rescue Errno::ENOENT
     puts "#{monitor.file_path} doesn't exist"

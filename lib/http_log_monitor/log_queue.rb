@@ -8,8 +8,8 @@ module HttpLogMonitor
 
     attribute :logs, Types::Array.of(Log).default([])
     attribute :invalid_logs, Types::Array.of(Log).default([])
-    attribute :threshold, Types::Coercible::Integer.default(120)
-    attribute :alerts_threshold, Types::Coercible::Integer.default(500)
+    attribute :threshold, Types::Coercible::Integer.default(ENV.fetch("MONITOR_THRESHOLD", 120))
+    attribute :alerts_threshold, Types::Coercible::Integer.default(ENV.fetch("ALERTS_THRESHOLD", 500))
     attribute :alerts, Alerts.default(Alerts.new)
     attribute :sections, Types::Hash.default(Hash.new(0))
 

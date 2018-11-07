@@ -1,12 +1,11 @@
 module HttpLogMonitor
   class Report
-    def initialize(monitor:, refresh: 10)
+    def initialize(monitor:)
       @monitor = monitor
-      @refresh = refresh
     end
 
     def with(monitor)
-      self.class.new(monitor: monitor, refresh: refresh)
+      self.class.new(monitor: monitor)
     end
 
     def to_s
@@ -15,6 +14,7 @@ Monitor Info
 --------------------------------------------------
 Threshold: #{monitor.threshold}
 Alert Threshold: #{monitor.alerts_threshold}
+Refresh Time: #{monitor.refresh}
 --------------------------------------------------
 Log Stats
 --------------------------------------------------
@@ -34,7 +34,7 @@ HTTP Codes Stats
 Alerts
 -----------------------------------------------------
 Total: #{monitor.total_alerts}
-High Traffic (Amount of hits for the last 2 minutes)
+High Traffic Requests
 #{monitor.alerts_stats.join(" - ")}
 EOF
     end

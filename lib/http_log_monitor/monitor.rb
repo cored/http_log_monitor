@@ -30,6 +30,7 @@ module HttpLogMonitor
 
     attribute :log_queue, LogQueue
     attribute :file_path, Types::String.default("")
+    attribute :refresh, Types::Coercible::Integer.default(ENV.fetch("MONITOR_REFRESH_TIME", 10))
 
     def add(log)
       new(log_queue: log_queue.push(log))
