@@ -37,7 +37,7 @@ module HttpLogMonitor
 
     def alerts_stats
       log_queue.alerts.to_h.map do |section, alerts|
-        [section, alerts.count]
+        [section, alerts.count, alerts.map(&:date)]
       end
     end
 

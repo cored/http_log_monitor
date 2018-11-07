@@ -3,6 +3,7 @@ module HttpLogMonitor
     class Alert < Dry::Struct
       attribute :hits, Types::Integer.default(0)
       attribute :section, Types::String.default("")
+      attribute :date, Types::DateTime.default(DateTime.now)
     end
 
     attribute :alerts, Types::Array.of(Alert).default([])
@@ -13,6 +14,10 @@ module HttpLogMonitor
       else
         new(alerts: recover_for(section))
       end
+    end
+
+    def to_a
+      alerts
     end
 
     def count

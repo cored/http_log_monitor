@@ -1,4 +1,3 @@
-require "timecop"
 require "spec_helper"
 
 RSpec.describe HttpLogMonitor::LogQueue do

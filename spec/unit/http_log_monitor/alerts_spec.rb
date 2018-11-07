@@ -9,6 +9,17 @@ RSpec.describe HttpLogMonitor::Alerts do
         expect(alerts.with(section: "user",
                            hits: 1, threshold: 1).count).to eql 1
       end
+
+      specify do
+        Timecop.freeze DateTime.parse("2018-11-07 1:00") do
+          expect(
+            alerts
+            .with(section: "user", hits: 1, threshold: 1)
+            .to_a
+            .map(&:date)
+          ).to match_array [DateTime.parse("2018-11-07 1:00")]
+        end
+      end
     end
 
     context "when the section hits is less than the alert threshold" do
