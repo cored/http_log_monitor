@@ -14,7 +14,7 @@ module HttpLogMonitor
     attribute :sections, Types::Hash.default(Hash.new(0))
 
     def total_bytes
-      logs.map(&:bytes).reduce(:+)
+      logs.map(&:bytes).reduce(0, :+)
     end
 
     def average_bytes
@@ -23,7 +23,7 @@ module HttpLogMonitor
     end
 
     def push(log)
-      new_logs = logs
+      new_logs = logs_within_threshold
       new_invalid_logs = invalid_logs
 
       if log.valid?
@@ -90,6 +90,21 @@ module HttpLogMonitor
 
     def current_time_in_seconds
       Time.now.to_time
+    end
+
+    def logs_within_threshold
+      oldest_log_idx  = nil
+
+      logs.each_with_index do |log, idx|
+        break if log.date.to_time >= threshold_seconds
+
+        oldest_log_idx = idx
+      end
+      oldest_log_idx.nil? ? [] : logs[0..oldest_log_idx]
+    end
+
+    def threshold_seconds
+      DateTime.now.to_time - (threshold / 86400)
     end
   end
 end
