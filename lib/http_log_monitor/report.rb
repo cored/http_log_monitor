@@ -5,17 +5,21 @@ module HttpLogMonitor
     end
 
     def with(monitor)
-      self.class.new(monitor: monitor)
+      @monitor = monitor
+
+      self
     end
 
     def render
-      clear_screen
-      puts monitor.to_s
+      refresh_after do
+        clear_screen
+        puts monitor.to_s
+      end
     end
 
     private
 
-    attr_reader :monitor, :refresh
+    attr_reader :monitor
 
     def clear_screen
       system("clear") or system("cls")
@@ -25,7 +29,7 @@ module HttpLogMonitor
       loop do
         before = Time.now
         yield
-        interval = refresh - (Time.now - before)
+        interval = monitor.refresh - (Time.now - before)
         sleep(interval) if interval > 0
       end
     end

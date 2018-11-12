@@ -2,6 +2,7 @@ module HttpLogMonitor
   class Monitor < Dry::Struct
     attribute :logs, Types::Array.of(Log).default([])
     attribute :sections, Types::Hash.default(Hash.new(0))
+    attribute :http_codes, Types::Hash.default(Hash.new(0))
     attribute :file_path, Types::String.default("")
     attribute :invalid_logs_count, Types::Integer.default(0)
     attribute :refresh, Types::Coercible::Integer.default(ENV.fetch("MONITOR_REFRESH_TIME", 10))
@@ -43,19 +44,24 @@ EOF
     def add(log)
       new_logs = logs_within_threshold
       new_invalid_logs_count = invalid_logs_count
+      new_sections = Hash.new(0)
+      new_http_codes = Hash.new(0)
 
       if log.valid?
         new_logs += [log]
+        new_http_codes = http_codes.merge(
+          log.code => http_codes[log.code] + 1
+        )
+        new_sections = sections.merge(
+          log.section => sections[log.section] + 1
+        )
       else
         new_invalid_logs_count += 1
       end
 
-      new_sections = sections.merge(
-        log.section => sections[log.section] + 1
-      )
-
       new(
         sections: new_sections,
+        http_codes: new_http_codes,
         logs: new_logs,
         invalid_logs_count: new_invalid_logs_count,
         alerts: alerts.with(
@@ -66,22 +72,35 @@ EOF
       )
     end
 
+    def to_h
+      {
+        alerts: alerts_stats,
+        alerts_threshold: alerts_threshold,
+        sections: sections,
+        threshold: threshold,
+        refresh: refresh,
+        file_path: file_path,
+        invalid_logs_count: invalid_logs_count,
+        logs: logs.map(&:to_h),
+        http_code_stats: http_codes,
+      }
+    end
+
+    private
+
     def logs_count
       logs.size
     end
 
     def alerts_stats
-      alerts.to_h.map do |section, alerts|
-        [section, alerts.count, alerts.map(&:date)]
-      end
+      alerts.stats
     end
 
     def http_code_stats
-      most_processed_http_codes.map do |code, stats|
+      http_codes.map do |code, amount|
         [
           code,
-          stats.map(&:section).uniq,
-          stats.count,
+          amount
         ]
       end
     end
@@ -109,14 +128,16 @@ EOF
     end
 
     def most_hit_section
-      sections.sort.reverse.first
+      ascending_sorted_sections.reverse.first
     end
 
     def less_hit_section
-      sections.sort.first
+      ascending_sorted_sections.first
     end
 
-    private
+    def ascending_sorted_sections
+      @_sorted_sections ||= sections.sort
+    end
 
     def logs_within_threshold
       oldest_log_idx  = nil
@@ -148,10 +169,6 @@ EOF
 
     def current_time_in_seconds
       Time.now.to_time
-    end
-
-    def most_processed_http_codes
-      logs.group_by(&:code).sort
     end
   end
 end

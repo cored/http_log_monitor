@@ -24,11 +24,17 @@ module HttpLogMonitor
       alerts.size
     end
 
-    def to_h
-      alerts.group_by(&:section)
+    def stats
+      to_h.map do |section, alerts|
+        [section, alerts.count, alerts.map(&:date)]
+      end
     end
 
     private
+
+    def to_h
+      alerts.group_by(&:section)
+    end
 
     def recover_for(section)
       alerts.reject do |alert|

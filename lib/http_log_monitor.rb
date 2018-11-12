@@ -11,6 +11,10 @@ module HttpLogMonitor
 
     f = File.open(monitor.file_path, "r")
 
+    Thread.new do
+      report.render
+    end
+
     loop do
       select([f])
       line = f.gets
@@ -18,9 +22,7 @@ module HttpLogMonitor
       log = Log.for(line.to_s)
       monitor = monitor.add(log)
 
-      report =  report.with(monitor)
-      report.render
-      sleep(monitor.refresh)
+      report = report.with(monitor)
     end
   rescue Errno::ENOENT
     puts "#{monitor.file_path} doesn't exist"
