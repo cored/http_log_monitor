@@ -6,7 +6,7 @@ module HttpLogMonitor
   Dotenv.load!
 
   def self.call(options:)
-    monitor = Monitor.for(options)
+    monitor = Monitor.new(options)
     report = Report.new(monitor: monitor)
 
     f = File.open(monitor.file_path, "r")
@@ -25,6 +25,6 @@ module HttpLogMonitor
   rescue Errno::ENOENT
     puts "#{monitor.file_path} doesn't exist"
   rescue Interrupt
-    report.to_s
+    monitor.to_s
   end
 end

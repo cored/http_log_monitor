@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe HttpLogMonitor::Monitor do
   subject(:monitor) do
-    described_class.for(attributes)
+    described_class.new(attributes)
   end
 
   let(:attributes) { {} }
@@ -62,16 +62,16 @@ RSpec.describe HttpLogMonitor::Monitor do
     end
   end
 
-  describe "#queue_size" do
+  describe "#logs_count" do
     context "when passing an invalid log" do
       specify do
-        expect(monitor.add(invalid_log).queue_size).to eql 0
+        expect(monitor.add(invalid_log).logs_count).to eql 0
       end
     end
 
     context "when passing a valid log" do
       specify do
-        expect(monitor.add(valid_log).queue_size).to eql 1
+        expect(monitor.add(valid_log).logs_count).to eql 1
       end
     end
   end
