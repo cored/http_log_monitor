@@ -19,8 +19,10 @@ module HttpLogMonitor
       select([f])
       line = f.gets
 
-      log = Log.for(line.to_s)
-      monitor = monitor.add(log)
+      Thread.new do
+        log = Log.for(line.to_s)
+        monitor = monitor.add(log)
+      end
 
       report = report.with(monitor)
     end
