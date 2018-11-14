@@ -66,7 +66,7 @@ RSpec.describe HttpLogMonitor::Monitor do
                                     Rational(-5, 24)) do
           monitor_with_alerts = monitor.process(log).process(log).process(log)
 
-          expect(monitor_with_alerts.alerts_stats).to match(/Recover/)
+          expect(monitor_with_alerts.alerts_stats).to match(/No Alerts/)
         end
       end
     end

@@ -1,7 +1,8 @@
 # HttpLogMonitor
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/619b0bf79440ca90106d/maintainability)](https://codeclimate.com/github/cored/http_log_monitor/maintainability)
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/http_log_monitor`. To experiment with that code, run `bin/console` for an interactive prompt.
+
+Monitor [common access](https://httpd.apache.org/docs/1.3/logs.html) logs to display useful statistics and report alerts.
 
 ## Installation
 
