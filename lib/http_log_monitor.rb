@@ -22,13 +22,12 @@ module HttpLogMonitor
       Thread.new do
         log = Log.for(line.to_s)
         monitor = monitor.add(log)
-      end
-
-      report = report.with(monitor)
+        report.with(monitor)
+      end.join
     end
   rescue Errno::ENOENT
     puts "#{monitor.file_path} doesn't exist"
   rescue Interrupt
-    monitor.to_s
+    report.to_s
   end
 end

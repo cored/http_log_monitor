@@ -10,38 +10,6 @@ module HttpLogMonitor
     attribute :alerts_threshold, Types::Coercible::Integer.default(ENV.fetch("ALERTS_THRESHOLD", 500))
     attribute :alerts, Alerts.default(Alerts.new)
 
-    def to_s
-<<EOF
-Monitor Info
---------------------------------------------------
-Threshold: #{threshold}
-Alert Threshold: #{alerts_threshold}
-Refresh Time: #{refresh}
---------------------------------------------------
-Log Stats
---------------------------------------------------
-Filename: #{file_path}
-Total lines processed: #{logs_count}
-Total lines with errors: #{invalid_logs_count}
----------------------------------------------------
-Sections Stats
----------------------------------------------------
-Most hits: #{most_hit_section}
-Less hits: #{less_hit_section}
----------------------------------------------------
-HTTP Codes Stats
-----------------------------------------------------
-Code - Hits
-#{http_code_stats.join("\n")}
-----------------------------------------------------
-Alerts
------------------------------------------------------
-Total: #{total_alerts}
-High Traffic Requests
-#{alerts_stats.join(" - ")}
-EOF
-    end
-
     def add(log)
       new_logs = logs_within_threshold
       new_invalid_logs_count = invalid_logs_count
@@ -66,7 +34,6 @@ EOF
         logs: new_logs,
         invalid_logs_count: new_invalid_logs_count,
         alerts: alerts.with(
-          section: log.section,
           hits: amount_of_hits_past_2_minutes_for(log.section),
           threshold: alerts_threshold
         )
@@ -87,14 +54,12 @@ EOF
       }
     end
 
-    private
-
     def logs_count
       logs.size
     end
 
     def alerts_stats
-      alerts.stats
+      alerts.to_s
     end
 
     def http_code_stats
@@ -156,16 +121,10 @@ EOF
     end
 
     def amount_of_hits_past_2_minutes_for(section)
-      all_logs_for(section).select do |log|
+      logs_within_threshold.select do |log|
         time_diff = Time.at((current_time_in_seconds - log.date.to_time).to_i.abs).strftime("%M:%S")
         time_diff.to_i == 2
       end.count
-    end
-
-    def all_logs_for(section)
-      logs.select do |log|
-        log.section == section
-      end
     end
 
     def current_time_in_seconds

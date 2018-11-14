@@ -2,44 +2,26 @@ module HttpLogMonitor
   class Alerts < Dry::Struct
     class Alert < Dry::Struct
       attribute :hits, Types::Integer.default(0)
-      attribute :section, Types::String.default("")
-      attribute :date, Types::DateTime.default(DateTime.now)
+      attribute :time, Types::Time.default(Time.now)
+      attribute :status, Types::String.default("")
+
+      def to_s
+        "#{status} at #{time} with #{hits} hits over the threshold"
+      end
     end
 
-    attribute :alerts, Types::Array.of(Alert).default([])
+    attribute :alert, Alert
 
-    def with(section:, hits:, threshold:)
+    def with(hits:, threshold:)
       if hits >= threshold
-        new(alerts: alerts + [Alert.new(hits: hits, section: section)])
+        new(alert: Alert.new(hits: hits, status: "High Traffic"))
       else
-        new(alerts: recover_for(section))
+        new(alert: Alert.new(hits: hits, status: "Recover"))
       end
     end
 
-    def to_a
-      alerts
-    end
-
-    def count
-      alerts.size
-    end
-
-    def stats
-      to_h.map do |section, alerts|
-        [section, alerts.count, alerts.map(&:date)]
-      end
-    end
-
-    private
-
-    def to_h
-      alerts.group_by(&:section)
-    end
-
-    def recover_for(section)
-      alerts.reject do |alert|
-        alert.section == section
-      end
+    def to_s
+      alert.to_s
     end
   end
 end

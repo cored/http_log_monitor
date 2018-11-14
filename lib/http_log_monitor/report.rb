@@ -13,8 +13,38 @@ module HttpLogMonitor
     def render
       refresh_after do
         clear_screen
-        puts monitor.to_s
+        puts to_s
       end
+    end
+
+    def to_s
+<<EOF
+Monitor Info
+--------------------------------------------------
+Threshold: #{monitor.threshold}
+Alert Threshold: #{monitor.alerts_threshold}
+Refresh Time: #{monitor.refresh}
+--------------------------------------------------
+Log Stats
+--------------------------------------------------
+Filename: #{monitor.file_path}
+Total lines processed: #{monitor.logs_count}
+Total lines with errors: #{monitor.invalid_logs_count}
+---------------------------------------------------
+Sections Stats
+---------------------------------------------------
+Most hits: #{monitor.most_hit_section}
+Less hits: #{monitor.less_hit_section}
+---------------------------------------------------
+HTTP Codes Stats
+----------------------------------------------------
+Code - Hits
+#{monitor.http_code_stats.join("\n")}
+----------------------------------------------------
+Alerts
+-----------------------------------------------------
+#{monitor.alerts_stats}
+EOF
     end
 
     private

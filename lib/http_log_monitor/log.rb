@@ -12,7 +12,9 @@ module HttpLogMonitor
       new(
         host: attrs["%h"],
         user: attrs["%u"],
-        date: attrs["%t"].gsub(/\[|\]/, ""),
+        date: DateTime.strptime(
+					attrs["%t"].gsub(/\[|\]/, ""), format = '%e/%b/%Y:%H:%M:%S %z'
+					),
         section: section,
         code: attrs["%>s"],
         bytes: attrs["%b"]
