@@ -73,6 +73,18 @@ $ export MONITOR_THRESHOLD=120 # 120 by default
 *Any of the environment variables will be overwritten by the options passed
 through the command line*
 
+## Features
+
+- [x] Monitor a common log file and process statistics
+- [x] Check for past processed logs to triggered alerts base on the total amount of
+hits
+
+## Known Bugs
+
+- [ ] Fix none thread safe monitoring (At the moment there are just two threads
+for processing logs and rendering this is not scalable)
+- [ ] Remove more indirection between the monitor and the report
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
