@@ -37,29 +37,32 @@ Specific options:
 ```
 Monitor Info
 --------------------------------------------------
-Threshold: 1
-Alert Threshold: 5
+Threshold: 120
+Alert Threshold: 3
 Refresh Time: 10
 --------------------------------------------------
 Log Stats
 --------------------------------------------------
-Filename: ./test_access.log
-Total lines processed: 9
+Filename: test_access.log
+Total lines processed: 4
 Total lines with errors: 0
+Total bytes: 403
+Avg bytes: 100
 ---------------------------------------------------
 Sections Stats
 ---------------------------------------------------
-Most hits: ["/user", 6]
-Less hits: ["/report", 3]
+Most hits: ["/user", 3]
+Less hits: ["/report", 1]
 ---------------------------------------------------
 HTTP Codes Stats
 ----------------------------------------------------
-200 - /report - /user - 7 - 503 - /user - 2
+Code - Hits
+200 - 3
+503 - 1
 ----------------------------------------------------
 Alerts
 -----------------------------------------------------
-Total: 0
-High Traffic Requests
+No Alerts at 2018-11-14 09:30:14 -0500 with 0 hits over the threshold
 ```
 
 ## Configuration Settings
