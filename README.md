@@ -23,14 +23,13 @@ Or install it yourself as:
 ## Usage
 
 ```
-$ bin/monitor --help
-
 Usages: bin/monitor ACCESS_LOG_PATH [options]
 
 Specific options:
-		-a, --alerts-threshold <AMOUNT>  Hit alert threshold
-		-t, --threshold <SECONDS>        Log retention threshold
-		-h, --help                       Display help
+    -a, --alerts-threshold <AMOUNT>  Hit alert threshold
+    -t, --threshold <SECONDS>        Log retention threshold
+    -r, --refresh <SECONDS>          Time to refresh the monitor
+    -h, --help                       Display help
 ```
 
 ## Report Stats
