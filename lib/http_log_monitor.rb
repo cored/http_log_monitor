@@ -3,7 +3,7 @@ require "dotenv"
 require_relative "./http_log_monitor/types"
 
 module HttpLogMonitor
-  Dotenv.load!
+  Dotenv.load
 
   def self.call(options:)
     monitor = Monitor.new(options)
