@@ -1,5 +1,9 @@
 module HttpLogMonitor
   class Monitor < Dry::Struct
+    extend Forwardable
+
+    delegate [:size] => :logs
+
     attribute :logs, Types::Array.of(Log).default([])
     attribute :sections, Types::Hash.default(Hash.new(0))
     attribute :http_codes, Types::Hash.default(Hash.new(0))
@@ -8,9 +12,9 @@ module HttpLogMonitor
     attribute :refresh, Types::Coercible::Integer.default(ENV.fetch("MONITOR_REFRESH_TIME", 10))
     attribute :threshold, Types::Coercible::Integer.default(ENV.fetch("MONITOR_THRESHOLD", 120))
     attribute :alerts_threshold, Types::Coercible::Integer.default(ENV.fetch("ALERTS_THRESHOLD", 500))
-    attribute :alerts, Alerts.default(Alerts.new)
+    attribute :alert, Alert.default(Alert.new)
 
-    def add(log)
+    def process(log)
       new_logs = logs_within_threshold
       new_invalid_logs_count = invalid_logs_count
       new_sections = Hash.new(0)
@@ -21,6 +25,7 @@ module HttpLogMonitor
         new_http_codes = http_codes.merge(
           log.code => http_codes[log.code] + 1
         )
+
         new_sections = sections.merge(
           log.section => sections[log.section] + 1
         )
@@ -33,33 +38,15 @@ module HttpLogMonitor
         http_codes: new_http_codes,
         logs: new_logs,
         invalid_logs_count: new_invalid_logs_count,
-        alerts: alerts.with(
-          hits: amount_of_hits_past_2_minutes_for(log.section),
+        alert: alert.with(
+          hits: amount_of_hits_after_2_minutes(log.section),
           threshold: alerts_threshold
         )
       )
     end
 
-    def to_h
-      {
-        alerts: alerts_stats,
-        alerts_threshold: alerts_threshold,
-        sections: sections,
-        threshold: threshold,
-        refresh: refresh,
-        file_path: file_path,
-        invalid_logs_count: invalid_logs_count,
-        logs: logs.map(&:to_h),
-        http_code_stats: http_codes,
-      }
-    end
-
-    def logs_count
-      logs.size
-    end
-
     def alerts_stats
-      alerts.to_s
+      alert.to_s
     end
 
     def http_code_stats
@@ -72,25 +59,16 @@ module HttpLogMonitor
     end
 
     def total_bytes
-      logs.map(&:bytes).reduce(0, :+)
+      logs.map(&:bytes).sum
     end
 
     def total_hits
-      logs.size
-    end
-
-    def total_alerts
-      alerts.count
+      size
     end
 
     def average_bytes
       return 0 if total_bytes.zero?
       total_bytes / total_hits
-    end
-
-    def average_alerts
-      return 0 if total_alerts.zero?
-      current_hits / total_alerts
     end
 
     def most_hit_section
@@ -104,6 +82,8 @@ module HttpLogMonitor
     def ascending_sorted_sections
       @_sorted_sections ||= sections.sort
     end
+
+    private
 
     def logs_within_threshold
       oldest_log_idx  = nil
@@ -120,7 +100,7 @@ module HttpLogMonitor
       DateTime.now.to_time - (threshold / 86400)
     end
 
-    def amount_of_hits_past_2_minutes_for(section)
+    def amount_of_hits_after_2_minutes(section)
       logs_within_threshold.select do |log|
         time_diff = Time.at((current_time_in_seconds - log.date.to_time).to_i.abs).strftime("%M:%S")
         time_diff.to_i == 2

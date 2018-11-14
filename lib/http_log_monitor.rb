@@ -21,7 +21,7 @@ module HttpLogMonitor
 
       Thread.new do
         log = Log.for(line.to_s)
-        monitor = monitor.add(log)
+        monitor = monitor.process(log)
         report.with(monitor)
       end.join
     end

@@ -6,7 +6,7 @@ module HttpLogMonitor
   end
 end
 
-require_relative "./alerts"
+require_relative "./alert"
 require_relative "./log"
 require_relative "./monitor"
 require_relative "./report"
