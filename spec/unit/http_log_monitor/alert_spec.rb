@@ -16,7 +16,7 @@ RSpec.describe HttpLogMonitor::Alert do
       it "returns no alerts" do
         expect(
           alert.with(hits: 1, threshold: 10).status
-        ).to eql "No Alerts"
+        ).to eql "No Alerts - Recover"
       end
     end
   end
