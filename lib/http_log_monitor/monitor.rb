@@ -39,7 +39,7 @@ module HttpLogMonitor
         logs: new_logs,
         invalid_logs_count: new_invalid_logs_count,
         alert: alert.with(
-          hits: total_hits,
+          hits: amount_of_hits_for_the_past_2_minutes,
           threshold: alerts_threshold
         )
       )
@@ -99,7 +99,7 @@ module HttpLogMonitor
     def amount_of_hits_for_the_past_2_minutes
       logs_within_threshold.select do |log|
         log.date.to_time <= (threshold_in_seconds + 120)
-      end
+      end.count
     end
 
     def threshold_in_seconds
