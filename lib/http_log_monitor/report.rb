@@ -1,3 +1,5 @@
+require "filesize"
+
 module HttpLogMonitor
   class Report
     def initialize(monitor:)
@@ -30,8 +32,8 @@ Log Stats
 Filename: #{monitor.file_path}
 Total lines processed: #{monitor.total_hits}
 Total lines with errors: #{monitor.invalid_logs_count}
-Total bytes: #{monitor.total_bytes}
-Avg bytes: #{monitor.average_bytes}
+Total bytes: #{human_readable_bytes_for(monitor.total_bytes)}
+Avg bytes: #{human_readable_bytes_for(monitor.average_bytes)}
 ---------------------------------------------------
 Sections Stats
 ---------------------------------------------------
@@ -52,6 +54,10 @@ EOF
     private
 
     attr_reader :monitor
+
+    def human_readable_bytes_for(bytes)
+      Filesize.from(bytes.to_s).pretty
+    end
 
     def clear_screen
       system("clear") or system("cls")

@@ -5,6 +5,7 @@ PATH
       apachelogregex (~> 0.1.0)
       dotenv (~> 2.5.0)
       dry-struct (~> 0.6.0)
+      filesize (~> 0.2.0)
 
 GEM
   remote: https://rubygems.org/
@@ -39,6 +40,7 @@ GEM
       dry-equalizer (~> 0.2)
       dry-inflector (~> 0.1, >= 0.1.2)
       dry-logic (~> 0.4, >= 0.4.2)
+    filesize (0.2.0)
     ice_nine (0.11.2)
     method_source (0.9.0)
     pry (0.11.3)

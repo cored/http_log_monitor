@@ -10,8 +10,8 @@ module HttpLogMonitor
 
     attribute :hits, Types::Integer.default(0)
     attribute :time, Types::Time.default(Time.now)
-    attribute :status, Types::String.default("No Alerts")
-    attribute :threshold, Types::Integer.default(0)
+    attribute :status, Types::String.default("No Alerts - Recover")
+    attribute :threshold, Types::Integer.default(10)
 
     def to_s
       "#{status} at #{time} with #{hits} hits over the threshold"
