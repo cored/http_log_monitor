@@ -11,7 +11,7 @@ module HttpLogMonitor
     attribute :invalid_logs_count, Types::Integer.default(0)
     attribute :refresh, Types::Coercible::Integer.default(ENV.fetch("MONITOR_REFRESH_TIME", 10))
     attribute :threshold, Types::Coercible::Integer.default(ENV.fetch("MONITOR_THRESHOLD", 120))
-    attribute :alerts_threshold, Types::Coercible::Integer.default(ENV.fetch("ALERTS_THRESHOLD", 500))
+    attribute :alerts_threshold, Types::Coercible::Integer.default(ENV.fetch("ALERTS_THRESHOLD", 10))
     attribute :alert, Alert.default(Alert.new)
 
     def process(log)

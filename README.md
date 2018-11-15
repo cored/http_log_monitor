@@ -79,10 +79,12 @@ through the command line*
 ## Features
 
 - [x] Monitor a common log file and process statistics
+- [x] Maintain the process running until manual user intervention
+- [x] Display information for the section with the hitest amount of hits
 - [x] Check for past processed logs to triggered alerts base on the total amount of
 hits
 
-## Known Bugs
+## Known Bugs & Improvements
 
 - [ ] Fix none thread safe monitoring (At the moment there are just two threads
 for processing logs and rendering this is not scalable)
