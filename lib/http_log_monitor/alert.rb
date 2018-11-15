@@ -4,7 +4,7 @@ module HttpLogMonitor
       if hits >= threshold
         new(hits: hits, status: "High Traffic", threshold: threshold)
       else
-        new(hits: hits, status: "No Alerts", threshold: threshold)
+        new(hits: hits, status: "No Alerts - Recover", threshold: threshold)
       end
     end
 
@@ -14,7 +14,7 @@ module HttpLogMonitor
     attribute :threshold, Types::Integer.default(10)
 
     def to_s
-      "#{status} at #{time} with #{hits} hits over the threshold"
+      "#{status} at (#{time.strftime("%H:%M:%S %p")}) with hits: #{hits} - threshold: #{threshold}"
     end
   end
 end

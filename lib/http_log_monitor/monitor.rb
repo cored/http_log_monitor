@@ -39,7 +39,7 @@ module HttpLogMonitor
         logs: new_logs,
         invalid_logs_count: new_invalid_logs_count,
         alert: alert.with(
-          hits: amount_of_hits_after_2_minutes(log.section),
+          hits: total_hits,
           threshold: alerts_threshold
         )
       )
@@ -89,26 +89,21 @@ module HttpLogMonitor
       oldest_log_idx  = nil
 
       logs.each_with_index do |log, idx|
-        break if log.date.to_time >= threshold_seconds
+        break if log.date.to_time >= threshold_in_seconds
 
         oldest_log_idx = idx
       end
       oldest_log_idx.nil? ? [] : logs[0..oldest_log_idx]
     end
 
-    def threshold_seconds
-      DateTime.now.to_time - (threshold / 86400)
-    end
-
-    def amount_of_hits_after_2_minutes(section)
+    def amount_of_hits_for_the_past_2_minutes
       logs_within_threshold.select do |log|
-        time_diff = Time.at((current_time_in_seconds - log.date.to_time).to_i.abs).strftime("%M:%S")
-        time_diff.to_i == 2
-      end.count
+        log.date.to_time <= (threshold_in_seconds + 120)
+      end
     end
 
-    def current_time_in_seconds
-      Time.now.to_time
+    def threshold_in_seconds
+      @_threshold_in_seconds ||= DateTime.now.to_time - threshold
     end
   end
 end

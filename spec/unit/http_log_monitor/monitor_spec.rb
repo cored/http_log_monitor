@@ -46,8 +46,7 @@ RSpec.describe HttpLogMonitor::Monitor do
           date: DateTime.new(2018, 11, 8, 11, 00, 00, Rational(-5, 24)),
           section: "/reports",
           code: "200",
-          bytes: 123
-    )
+          bytes: 123)
       end
 
       it "generates an alert" do
@@ -64,7 +63,7 @@ RSpec.describe HttpLogMonitor::Monitor do
       it "recovers from an alert"do
         Timecop.freeze DateTime.new(2018, 11, 8, 11, 00, 00,
                                     Rational(-5, 24)) do
-          monitor_with_alerts = monitor.process(log).process(log).process(log)
+          monitor_with_alerts = monitor.process(log)
 
           expect(monitor_with_alerts.alerts_stats).to match(/No Alerts/)
         end
