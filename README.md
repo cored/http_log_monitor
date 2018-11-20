@@ -38,31 +38,30 @@ Specific options:
 Monitor Info
 --------------------------------------------------
 Threshold: 120
-Alert Threshold: 3
+Alert Threshold: 10
 Refresh Time: 10
 --------------------------------------------------
 Log Stats
 --------------------------------------------------
 Filename: test_access.log
-Total lines processed: 4
-Total lines with errors: 0
-Total bytes: 403
-Avg bytes: 100
+Total lines processed: 5
+Total bytes: 526.00 B
+Avg bytes: 100.00 B
 ---------------------------------------------------
 Sections Stats
 ---------------------------------------------------
 Most hits: ["/user", 3]
-Less hits: ["/report", 1]
+Less hits: ["/report", 2]
 ---------------------------------------------------
 HTTP Codes Stats
 ----------------------------------------------------
 Code - Hits
-200 - 3
+200 - 4
 503 - 1
 ----------------------------------------------------
 Alerts
 -----------------------------------------------------
-No Alerts at 2018-11-14 09:30:14 -0500 with 0 hits over the threshold
+No Alerts - Recover at 09:40:03 AM
 ```
 
 ## Configuration Settings
@@ -80,15 +79,19 @@ through the command line*
 
 - [x] Monitor a common log file and process statistics
 - [x] Maintain the process running until manual user intervention
-- [x] Display information for the section with the hitest amount of hits
+- [x] Display information for the section with the highest amount of hits
 - [x] Check for past processed logs to triggered alerts base on the total amount of
 hits
 
 ## Known Bugs & Improvements
 
-- [ ] Fix none thread safe monitoring (At the moment there are just two threads
-for processing logs and rendering this is not scalable)
-- [ ] Remove more indirection between the monitor and the report
+- [ ] The amount of hits per seconds is not quantifying future hits after
+      processing for an alert
+- [ ] Since the monitoring happens to fast the implementation is not using
+    a clock wall to calculate the amount of hits past 2 minutes, instead what
+    is doing is just to gather the total amount of hits across all seconds
+    prior to the point in time in which the calculation happen
+
 
 ## Development
 
