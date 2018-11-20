@@ -31,8 +31,8 @@ Log Stats
 --------------------------------------------------
 Filename: #{monitor.file_path}
 Total lines processed: #{monitor.total_hits}
-Total bytes: #{human_readable_bytes_for(monitor.total_bytes)}
-Avg bytes: #{human_readable_bytes_for(monitor.average_bytes)}
+Total bytes: #{monitor.total_bytes}
+Avg bytes: #{monitor.average_bytes}
 ---------------------------------------------------
 Sections Stats
 ---------------------------------------------------
@@ -42,11 +42,11 @@ Less hits: #{monitor.less_hit_section}
 HTTP Codes Stats
 ----------------------------------------------------
 Code - Hits
-#{monitor.http_code_stats.join("\n")}
+#{monitor.http_code_stats}
 ----------------------------------------------------
 Alerts
 -----------------------------------------------------
-#{monitor.alerts_stats}
+#{alert_or_recover}
 EOF
     end
 
@@ -54,8 +54,9 @@ EOF
 
     attr_reader :monitor
 
-    def human_readable_bytes_for(bytes)
-      Filesize.from(bytes.to_s).pretty
+    def alert_or_recover
+      Alert.for(hits: monitor.total_hits_per_second,
+                threshold: monitor.alerts_threshold)
     end
 
     def clear_screen

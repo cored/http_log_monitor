@@ -8,5 +8,6 @@ end
 
 require_relative "./alert"
 require_relative "./log"
+require_relative "./stats"
 require_relative "./monitor"
 require_relative "./report"

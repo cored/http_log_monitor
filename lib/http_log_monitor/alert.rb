@@ -1,6 +1,6 @@
 module HttpLogMonitor
   class Alert < Dry::Struct
-    def with(hits:, threshold:)
+    def self.for(hits:, threshold:)
       if hits >= threshold
         new(
           hits: hits,

@@ -18,56 +18,45 @@ RSpec.describe HttpLogMonitor::Monitor do
   end
   let(:invalid_log) { HttpLogMonitor::Log.new(date: DateTime.new(2018, 11, 8, 11, 00, 00, Rational(-5, 24))) }
 
-  describe "#total_bytes" do
-    it "quantifies the total amount of bytes for the current logs" do
-      expect(monitor.process(log).total_bytes).to eql 123
+  describe "#total_hits_per_second" do
+    it "quantifies the total amount of hits per second" do
+      expect(monitor.process(log).total_hits_per_second).to eql 1
     end
   end
 
-  describe "#process" do
-    context "when the log is valid" do
-      it "process logs" do
-				expect(monitor.process(log).total_hits).to eql 1
-			end
+  describe "#http_code_stats" do
+    specify do
+      expect(monitor.process(log).http_code_stats).to eql "200 - 1"
     end
+  end
 
-    context "when the log is invalid" do
-      it "does not include the invalid log to the queue" do
-        expect(monitor.process(invalid_log).total_hits).to eql 0
-      end
+  describe "#most_hit_section" do
+    specify do
+      expect(monitor.process(log).most_hit_section).to eql ["index.php", 1]
     end
+  end
 
-    context "when an a log is getting hit in the alert period threshold" do
-      let(:attributes) { {alerts_threshold: 2, threshold: 1} }
-      let(:recovering_log) do
-        HttpLogMonitor::Log.new(
-          host: "127.0.0.1",
-          user: "james",
-          date: DateTime.new(2018, 11, 8, 11, 00, 00, Rational(-5, 24)),
-          section: "/reports",
-          code: "200",
-          bytes: 123)
-      end
+  describe "#less_hit_section" do
+    specify do
+      expect(monitor.process(log).less_hit_section).to eql ["index.php", 1]
+    end
+  end
 
-      it "generates an alert" do
-        Timecop.freeze DateTime.new(2018, 11, 8, 10, 02, 00, Rational(-5, 24)) do
-          expect(
-            monitor
-            .process(log)
-            .process(log)
-            .process(log).alerts_stats
-          ).to match(/High Traffic/)
-        end
-      end
+  describe "#average_bytes" do
+    specify do
+      expect(monitor.process(log).average_bytes.to_s).to eql "0.00 B"
+    end
+  end
 
-      it "recovers from an alert"do
-        Timecop.freeze DateTime.new(2018, 11, 8, 11, 00, 00,
-                                    Rational(-5, 24)) do
-          monitor_with_alerts = monitor.process(log)
+  describe "#total_hits" do
+    specify do
+      expect(monitor.process(log).total_hits.to_s).to eql "1"
+    end
+  end
 
-          expect(monitor_with_alerts.alerts_stats).to match(/No Alerts/)
-        end
-      end
+  describe "#total_bytes" do
+    specify do
+      expect(monitor.process(log).total_bytes.to_s).to eql "123.00 B"
     end
   end
 end
