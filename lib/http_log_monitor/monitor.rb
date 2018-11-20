@@ -5,7 +5,6 @@ module HttpLogMonitor
     attribute :hits_per_second, Types::Hash.default(Hash.new(0))
     attribute :http_codes, Types::Hash.default(Hash.new(0))
     attribute :file_path, Types::String.default("")
-    attribute :invalid_logs_count, Types::Integer.default(0)
     attribute :total_bytes, Types::Integer.default(0)
     attribute :refresh, Types::Coercible::Integer.default(ENV.fetch("MONITOR_REFRESH_TIME", 10))
     attribute :threshold, Types::Coercible::Integer.default(ENV.fetch("MONITOR_THRESHOLD", 120))
@@ -15,7 +14,6 @@ module HttpLogMonitor
     def process(log)
       new_log_counts = log_counts
       new_total_bytes = total_bytes
-      new_invalid_logs_count = invalid_logs_count
       new_sections = sections
       new_http_codes = http_codes
       new_hits_per_seconds = hits_per_second
@@ -34,8 +32,6 @@ module HttpLogMonitor
         new_hits_per_seconds = hits_per_second.merge(
           log.date_in_seconds => hits_per_second[log.date_in_seconds] + 1
         )
-      else
-        new_invalid_logs_count += 1
       end
 
       new(
@@ -44,7 +40,6 @@ module HttpLogMonitor
         sections: new_sections,
         total_bytes: new_total_bytes,
         http_codes: new_http_codes,
-        invalid_logs_count: new_invalid_logs_count,
         alert: alert.with(
           hits: amount_of_hits_for_the_past_2_minutes,
           threshold: alerts_threshold,

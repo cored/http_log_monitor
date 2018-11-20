@@ -31,7 +31,6 @@ Log Stats
 --------------------------------------------------
 Filename: #{monitor.file_path}
 Total lines processed: #{monitor.total_hits}
-Total lines with errors: #{monitor.invalid_logs_count}
 Total bytes: #{human_readable_bytes_for(monitor.total_bytes)}
 Avg bytes: #{human_readable_bytes_for(monitor.average_bytes)}
 ---------------------------------------------------
