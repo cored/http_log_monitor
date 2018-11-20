@@ -2,29 +2,23 @@ module HttpLogMonitor
   class Alert < Dry::Struct
     def with(hits:, threshold:)
       if hits >= threshold
-        new(hits: hits, threshold: threshold, high: true)
+        new(
+          hits: hits,
+          description: "High Traffic at #{Time.now.strftime("%H:%M:%S %p")}"
+        )
       else
-        new(hits: hits, threshold: threshold)
+        new(
+          hits: hits,
+          description: "No Alerts - Recover at #{Time.now.strftime("%H:%M:%S %p")}"
+        )
       end
     end
 
     attribute :hits, Types::Integer.default(0)
-    attribute :time, Types::Time.default(Time.now)
-    attribute :high, Types::Bool.default(false)
-    attribute :threshold, Types::Integer.default(10)
+    attribute :description, Types::String.default("")
 
     def to_s
-      if high
-        "High Traffic at (#{formatted_time}) with hits: #{hits} - threshold: #{threshold}"
-      else
-        "No Alerts - Recover at (#{formatted_time})"
-      end
-    end
-
-    private
-
-    def formatted_time
-      time.strftime("%H:%M:%S %p")
+      description
     end
   end
 end

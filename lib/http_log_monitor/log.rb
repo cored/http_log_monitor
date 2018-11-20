@@ -30,6 +30,10 @@ module HttpLogMonitor
     attribute :code, Types::String.default("")
     attribute :bytes, Types::Coercible::Integer.default(0)
 
+    def date_in_seconds
+      date.to_time.to_i
+    end
+
     def valid?
       !host.empty? && !user.empty? && !section.empty? && !code.empty?
     end

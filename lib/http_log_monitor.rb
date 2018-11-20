@@ -32,11 +32,9 @@ module HttpLogMonitor
     loop do
       select([file])
       line = file.gets
-      Thread.new do
-        log = Log.for(line.to_s)
-        monitor = monitor.process(log)
-        report.with(monitor)
-      end
+      log = Log.for(line.to_s)
+      monitor = monitor.process(log)
+      report.with(monitor)
     end
   end
 end
